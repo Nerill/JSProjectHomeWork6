@@ -1,0 +1,28 @@
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s;
+}
+
+li:hover {
+    background-color: #ddd;
+}
+
+.delete-item:hover{
+    color: #ff0000
+}
+.edit-item:hover{
+    color: #008000
+}
+
+.input-field {
+    margin-bottom: 10px;
+}
+
+.task-title{
+    font-size: 25px;}
