@@ -14,8 +14,6 @@ form.addEventListener('submit', (event) => {
 
     createSingleTaskElement(taskInput.value);
 
-    localStorage.setItem('countBook', Number(localStorage.getItem('countBook'))+1) // Збільшуємо лічильник у localstorage при наявності елементу у tasks.
-
     storeTaskInLocalStorage(taskInput.value);
 
     taskInput.value = ''; //form.reset();
@@ -24,22 +22,24 @@ form.addEventListener('submit', (event) => {
 document.addEventListener('DOMContentLoaded', renderTasks);
 
 taskList.addEventListener('click', (event)=>{
+
     const iconContainer = event.target.parentElement;
 
     if(iconContainer.classList.contains('delete-item')){ // Видалення елементу
         if(confirm('Are you sure?')){
-            iconContainer.parentElement.remove();
             const tasks = localStorage.getItem('tasks') !== null
                 ? JSON.parse(localStorage.getItem('tasks'))
                 :[];
-
+            
             tasks.forEach((task, index) => {
-                if(index === Number(iconContainer.parentElement.id)){
+                if(index === getIndexOfLIElement(iconContainer.parentElement)){
                     tasks.splice(index, 1); //Видалення з якого елементу і скільки
                 }
             });
 
             localStorage.setItem('tasks', JSON.stringify(tasks));
+
+            iconContainer.parentElement.remove();
             
             renderTasks();
         }
@@ -55,11 +55,10 @@ taskList.addEventListener('click', (event)=>{
                 :[];
 
             tasks.forEach((task, index) => {
-                if(index === Number(iconContainer.parentElement.id)){
+                if(index === getIndexOfLIElement(iconContainer.parentElement)){
                     tasks[index] = itemText;
                 }
             });
-            console.log('tasks - ' + tasks);
 
             localStorage.setItem('tasks', JSON.stringify(tasks));
             
@@ -81,8 +80,6 @@ function createSingleTaskElement(newTask){
     const li = document.createElement('li');
     li.className = 'collection-item';
 
-    li.id = localStorage.getItem('countBook'); // Додає id до li, який ідентичний до індекса певного слова у localstorage
-
     li.appendChild(document.createTextNode(newTask));
 
     const deleteElement = document.createElement('span');
@@ -95,7 +92,7 @@ function createSingleTaskElement(newTask){
     editElement.className = "edit-item";
     editElement.innerHTML = '<i class="fa fa-edit"></i>';
 
-    li.appendChild(editElement); // Додавання іконки зміни
+    li.appendChild(editElement);
 
     taskList.appendChild(li);
 }
@@ -112,14 +109,23 @@ function storeTaskInLocalStorage(newTask){
 
 function renderTasks(){
     taskList.innerHTML = '';
-    localStorage.setItem('countBook', 0)
     const tasks = localStorage.getItem('tasks') !== null
     ? JSON.parse(localStorage.getItem('tasks'))
     :[];
 
     tasks.forEach((task) => {
         createSingleTaskElement(task);
-        localStorage.setItem('countBook', Number(localStorage.getItem('countBook'))+1) // Збільшуємо лічильник у localstorage при додаванні нового елементу.
     });
 
+}
+
+function getIndexOfLIElement(target){ // Функція для знаходження індекса елемента LI
+    let index;
+    for (let i = 0; i < taskList.children.length; i++) {
+        if (taskList.children[i] === target) {
+            index = i; 
+            break;
+        }
+    }
+    return index;
 }
